@@ -1,0 +1,229 @@
+
+
+function InitializeMyQuest()
+declare
+begin
+	
+	
+end
+
+
+
+//-----------------------------------------------------------------------------
+//  Main entry point for combat interactions:
+
+
+function make_attack(agent acting, agent target)
+declare
+	integer hitResult;
+begin
+	if ($notvalid(target)) return;
+	if ($notvalid_attacker(acting)) return;
+	
+	$hit_reaction(acting, target);
+	hitResult = $hit_check(acting, target);
+	
+	$debugout(acting's "title");
+	$debugout(" performed attack, result: ");
+	$debugout(hitResult);
+	
+	if (hitResult == 1) begin
+		$deal_damage(acting, target);
+	end
+	if (hitResult == 2) begin
+	end
+	if (hitResult == 3) begin
+	end
+end
+
+
+
+//-----------------------------------------------------------------------------
+//  First, we need to establish the relative odds of attack and defence for
+//  each party-
+
+
+function hit_check(agent attacker, agent defender) is integer
+declare
+	integer attackSkill, avoidSkill;
+	integer skillSum, rolledNum;
+begin
+	if ($is_person(defender) == FALSE) return 1;
+	
+	attackSkill = $hit_skill(attacker);
+	avoidSkill  = $avoid_skill(attacker, defender);
+	
+	if (defender's "target" == attacker) begin
+		avoidSkill = avoidSkill * 2;
+	end
+	if ($sees_hostile(defender, attacker) == FALSE) begin
+		avoidSkill = avoidSkill / 2;
+	end
+	
+	skillSum = attackSkill + avoidSkill;
+	rolledNum = $randomNumber(skillSum);
+	
+	if (rolledNum > avoidSkill) return 1;
+	else return 2;
+end
+
+
+function hit_skill(agent attacker) is integer
+declare
+	integer attackType, value;
+begin
+	attackType = attacker's "attacktype";
+	value = 0;
+	
+	if (attackType == 1) begin
+		value = $getattribute(attacker,#ATTRIB_HtoH);
+	end
+	if (attackType == 2) begin
+		value = $getattribute(attacker,#ATTRIB_Ranged);
+	end
+	if (attackType == 5) begin
+		value = Attacker's "Ranged";
+	end
+	
+	if (value < 0) value = 0;
+	return value + 5;
+end
+
+
+function avoid_skill(agent attacker, agent defender) is integer
+declare
+	integer attackType, value;
+begin
+	attackType = attacker's "attacktype";
+	value = 0;
+	
+	if (attackType == 1) begin
+		value = $getattribute(defender, #ATTRIB_Parry);
+	end
+	if (attackType == 2) begin
+		value = $getattribute(defender, #ATTRIB_Dodge);
+	end
+	if (attackType == 5) begin
+		value = $getattribute(defender, #ATTRIB_Dodge);
+	end
+	
+	if (value < 0) value = 0;
+	return value + 5;
+end
+
+
+
+//-----------------------------------------------------------------------------
+//  Now that we've established who bonked who, we actually deal damage and
+//  allow the target a chance to react-
+
+
+function deal_damage(agent attacker, agent defender)
+declare
+	integer dmg;
+	boolean magic_effect, do_poison, critical_effect;
+begin
+	
+	dmg = $get_damage(attacker, defender);
+	if (dmg <= 0) return;
+	
+	if ($is_person(defender)) begin
+		$createeffector(defender, "wounded_large",0);
+		$playsound(defender,"gethit");
+	end
+	
+	$adjustattribute(defender,#ATTRIB_HP,-dmg);
+end
+
+
+function get_damage(agent attacker, agent defender) is integer
+declare
+	integer dmg, soak, roll;
+begin
+	dmg = 0;
+	soak = 0;
+	
+	if ($is_person(attacker)) begin
+		dmg = $randomnumber($GetAttribute(attacker, #ATTRIB_weapon_basic_damage)) + 1;
+		dmg += $GetAttribute (attacker, #ATTRIB_weapon_struct_bonus);
+		dmg += $GetAttribute (attacker, #ATTRIB_weapon_magic_bonus);
+		dmg += ($getattribute(attacker, #ATTRIB_Strength) / #strength_div);
+	end
+	
+	if (attacker's "type" == "building") begin
+		dmg = $RandomNumber (Attacker's "Strength") + 1;
+		dmg = $BuildingDamageModifier ( attacker, defender, dmg );
+	end
+	
+	if ($is_person(defender)) begin
+		soak = $GetAttribute(defender, #ATTRIB_armor_basic_damage);
+		
+		if (defender's "subtype" == "hero") begin
+			soak += $GetAttribute(defender, #ATTRIB_armor_struct_bonus);
+			soak += $GetAttribute(defender, #ATTRIB_armor_magic_bonus );
+		end
+		
+		roll = $randomnumber(soak);
+		if (roll < soak / 4) roll = soak / 4;
+		soak = roll;
+	end
+	
+	if (defender's "type" == "building") begin
+		soak = dmg / 2;
+	end
+	
+	dmg = dmg - soak;
+	return dmg;
+end
+
+
+function hit_reaction(agent acting, agent target)
+declare
+	string type;
+	agent guy,palace;
+	list guys;
+begin
+	if ($is_person(target)) begin
+		if ($can_see(target, acting) && $sees_hostile(target, acting) == FALSE) begin
+			target's "Hostiles" << acting;
+		end
+	end
+	else if (target's "type" == "Building") begin
+		$release_occupants(target);
+	end
+end
+
+
+
+//-----------------------------------------------------------------------------
+//  Various utility functions for ascertaining type, visibility, etc.
+
+
+function is_person(agent acting) is boolean
+declare
+begin
+	if (acting's "type" == "building") return FALSE;
+	if (acting's "type" == "lair"    ) return FALSE;
+	return TRUE;
+end
+
+
+function can_see(agent acting, agent other) is boolean
+declare
+begin
+	if ($GetAttribute(other, #ATTRIB_HasEffectInvisibility) != 1) return FALSE;
+	return TRUE;
+end
+
+
+function sees_hostile(agent acting, agent other) is boolean
+declare
+begin
+	return $agentinlist(other, acting's "Hostiles");
+end
+
+
+
+
+
+

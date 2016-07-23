@@ -1,0 +1,22 @@
+<Majesty>
+	<Quest id="{61DC59EB-7602-4B25-B856-750C360A6CDC}">
+		<DataConfiguration>
+			<Dataset base="Majesty">
+				<Load>
+					<Template>Learning_Quest.q</Template>
+					<GPL>
+						<Target>learning_bytecode.bcd</Target>
+						<Source>Learning_GPL.gpl</Source>
+					</GPL>
+				</Load>
+			</Dataset>
+		</DataConfiguration>
+		<DisplayName lang="en_US">My Quest</DisplayName>
+		<Description lang="en_US">
+			<Short>My Quest's Goals</Short>
+			<Long>A description of My Quest</Long>
+		</Description>
+		<Difficulty>Easy</Difficulty>
+		<Name>InitializeMyQuest</Name>
+	</Quest>
+</Majesty>
