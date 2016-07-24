@@ -15,13 +15,14 @@ end
 
 function make_attack(agent acting, agent target)
 declare
-	integer hitResult;
+	integer hitResult, expGiven;
 begin
 	if ($notvalid(target)) return;
 	if ($notvalid_attacker(acting)) return;
 	
 	$hit_reaction(acting, target);
 	hitResult = $hit_check(acting, target);
+	expGiven  = $exp_value(acting, target);
 	
 	$debugout(acting's "title");
 	$debugout(" performed attack, result: ");
@@ -34,6 +35,8 @@ begin
 	end
 	if (hitResult == 3) begin
 	end
+	
+	$attack_end(acting, expGiven);
 end
 
 
@@ -144,15 +147,15 @@ begin
 	soak = 0;
 	
 	if ($is_person(attacker)) begin
-		dmg = $randomnumber($GetAttribute(attacker, #ATTRIB_weapon_basic_damage)) + 1;
+		roll = $GetAttribute(attacker, #ATTRIB_weapon_basic_damage);
+		dmg += $randomnumber(roll) + 1;
 		dmg += $GetAttribute (attacker, #ATTRIB_weapon_struct_bonus);
-		dmg += $GetAttribute (attacker, #ATTRIB_weapon_magic_bonus);
+		dmg += $GetAttribute (attacker, #ATTRIB_weapon_magic_bonus );
 		dmg += ($getattribute(attacker, #ATTRIB_Strength) / #strength_div);
 	end
 	
 	if (attacker's "type" == "building") begin
-		dmg = $RandomNumber (Attacker's "Strength") + 1;
-		dmg = $BuildingDamageModifier ( attacker, defender, dmg );
+		dmg = $RandomNumber(Attacker's "Strength") + 1;
 	end
 	
 	if ($is_person(defender)) begin
@@ -184,7 +187,10 @@ declare
 	list guys;
 begin
 	if ($is_person(target)) begin
-		if ($can_see(target, acting) && $sees_hostile(target, acting) == FALSE) begin
+		if (
+			$can_see(target, acting) &&
+			$sees_hostile(target, acting) == FALSE
+		) begin
 			target's "Hostiles" << acting;
 		end
 	end
@@ -192,6 +198,60 @@ begin
 		$release_occupants(target);
 	end
 end
+
+
+
+//-----------------------------------------------------------------------------
+//  And finally, grant XP to yourself and/or any controlling agent:
+
+
+function exp_value(agent attacks, agent defends) is integer
+declare
+	string defendsType;
+	integer expGiven;
+begin
+	defendsType = defends's "type";
+	expGiven = #attack_other_exp;
+	
+	if (defendsType == "building") begin
+		expGiven = #attack_other_exp * 1;
+	end
+	else if (defendsType == "monster") begin
+		expGiven = $getattribute(defends, #ATTRIB_LevelXP);
+	end
+	else if (defendsType == "lair") begin
+		expGiven = defends's "difficulty" * #lair_exp;
+	end
+	else if (defends's "subtype" == "hero") begin
+		expGiven = $getattribute(defends, #ATTRIB_experienceLevel);
+		expGiven = expGiven * #attack_hero_exp;
+	end
+	
+	return expGiven;
+end
+
+
+function attack_end(agent acting, integer expGiven)
+declare
+	integer expDiv;
+	agent leader;
+begin
+	
+	if (acting's "subtype" == "hero") begin
+		expDiv = $getattribute(acting, #ATTRIB_experiencelevel);
+		expDiv = expDiv / #combat_exp_div;
+		if (expDiv < 1) expDiv = 1;
+		$give_exp(acting, expGiven / expDiv);
+	end
+	
+	if ($hasattribute("familiar", acting)) if (acting's "familiar" == TRUE)
+	begin
+		leader = acting's "leader";
+		$give_exp(leader, expGiven / 2);
+	end
+end
+
+
 
 
 
