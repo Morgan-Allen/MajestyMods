@@ -1,0 +1,19 @@
+<Majesty>
+	
+	<Description type="Unit" subType="Overlay" ID="HRA1" Name="agrela_healing_effector" Description="Agrela healing">
+		<Engine version="1">
+			<Info value="Directionless"/>
+			<Info value="DontBlock"/>
+			<Menu value="11"/>
+			<ImageIDBase value="HRA1"/>
+			<DefaultSound value="Healing"/>
+			<Script type="0" cProc="0" GPLFunction="agrela_heal_end"/>
+		</Engine>
+		<Game version="1">
+			<DialogID value="0"/>
+			<StackPriority value="0"/>
+			<Flags value="TransparentToMouse"/>
+		</Game>
+	</Description>
+	
+</Majesty>

@@ -1,13 +1,5 @@
 
 
-function InitializeMyQuest()
-declare
-begin
-	
-	
-end
-
-
 
 //-----------------------------------------------------------------------------
 //  Main entry point for combat interactions:
@@ -135,7 +127,7 @@ begin
 		$playsound(defender,"gethit");
 	end
 	
-	$adjustattribute(defender,#ATTRIB_HP,-dmg);
+	$adjustattribute(defender, #ATTRIB_HP, -dmg);
 end
 
 
@@ -253,8 +245,6 @@ end
 
 
 
-
-
 //-----------------------------------------------------------------------------
 //  Various utility functions for ascertaining type, visibility, etc.
 
@@ -271,7 +261,7 @@ end
 function can_see(agent acting, agent other) is boolean
 declare
 begin
-	if ($GetAttribute(other, #ATTRIB_HasEffectInvisibility) != 1) return FALSE;
+	if ($GetAttribute(other, #ATTRIB_HasEffectInvisibility) == 1) return FALSE;
 	return TRUE;
 end
 

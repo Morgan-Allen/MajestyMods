@@ -6,7 +6,9 @@
 					<Template>Learning_Quest.q</Template>
 					<GPL>
 						<Target>learning_bytecode.bcd</Target>
-						<Source>Learning_GPL.gpl</Source>
+						<Source>GPL/quest_setup.gpl</Source>
+						<Source>GPL/combat_changes.gpl</Source>
+						<Source>GPL/spell_changes.gpl</Source>
 					</GPL>
 				</Load>
 			</Dataset>

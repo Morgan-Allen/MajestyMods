@@ -1,0 +1,412 @@
+
+
+
+
+//-----------------------------------------------------------------------------
+//  Spells from the Temple to Agrela:
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+function Agrela_Heal_Effect(agent affects)
+// player cast spell - from temple to agrela
+declare
+begin
+	if ($isdead(thisagent)) return;
+	$createeffector(affects, "agrela_healing_effector", 1000);
+end
+
+
+function agrela_heal_end(agent affects)
+declare
+	integer health, maxHP;
+begin
+	$player_heal(affects, 1);
+	
+	health = $GetAttribute(affects, #ATTRIB_HP    );
+	maxHP  = $GetAttribute(affects, #ATTRIB_MAX_HP);
+	
+	if (health < maxHP) begin
+		$createeffector(affects, "agrela_healing_effector", 1000);
+	end
+end
+
+
+
+function Blessing_Begin( agent thisagent )
+// player cast spell - from temple to agrela
+declare
+begin
+	$createeffector( thisagent, "blessing_effector", 0 );
+	$createeffector( thisagent, "blessing_icon", 30000 );
+	$SetAttribute( thisagent, #ATTRIB_HasEffectBlessing, 1 );
+
+	$MagicalAdjustAttribute(thisagent,#ATTRIB_HtoH,10);
+	$MagicalAdjustAttribute(thisagent,#ATTRIB_dodge,15);
+	$MagicalAdjustAttribute(thisagent,#ATTRIB_parry,15);
+	$MagicalAdjustAttribute(thisagent,#ATTRIB_ranged,10);
+end
+
+
+function Blessing_End( agent thisagent )
+// player cast spell - from temple to agrela
+// - callback from "blessing_icon" effector
+declare
+begin
+	$SetAttribute( thisagent, #ATTRIB_HasEffectBlessing, 0 );
+	$MagicalAdjustAttribute(thisagent,#ATTRIB_HtoH,-10);
+	$MagicalAdjustAttribute(thisagent,#ATTRIB_dodge,-15);
+	$MagicalAdjustAttribute(thisagent,#ATTRIB_parry,-15);
+	$MagicalAdjustAttribute(thisagent,#ATTRIB_ranged,-10);
+end
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+function Resurrection_Begin( agent thisagent )
+// player cast spell - from temple to agrela
+declare
+
+begin
+	$SpecifyIntent (ThisAgent, #intent_resurrecting);
+	$createeffector( thisagent, "resurrection_effector", 1500 );
+
+	$Shared_Begin_Resurrect( thisagent );
+end
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+function Resurrection_End( agent thisagent )
+// player cast spell - from temple to agrela
+// - callback from "resurrection_effector" effector
+declare
+
+begin
+	$Shared_End_Resurrect( thisagent );
+end
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+function Fervus_Heal_Effect( agent thisagent )
+// player cast spell - from temple to fervus
+declare
+	agent AIRootAgent;
+	integer healing;
+
+begin
+	if ($isdead(thisagent))
+		return;
+
+	AIRootAgent = $RetrieveAgent ( "GplAIRoot" );
+
+	$createeffector( thisagent, "fervus_healing_effector", 0 );
+
+	if ( $HasAttribute ( "Deathmatch_Rules", AIRootAgent ))
+		if ( AIRootAgent's "Deathmatch_Rules" == TRUE )
+			begin
+				healing = $RandomNumber ( #Deathmatch_Temple_Heal ) + #Deathmatch_Temple_Heal;
+				$Player_Heal ( thisagent, healing );
+			end
+		else
+			$Player_Heal ( thisagent, 100 );
+
+	if (thisagent's "backscript" == $use_building_safe)
+		begin
+			if ($haslowHP(thisagent) == False)
+				$reset_tasks(thisagent);
+		end
+end
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+function Vines_Begin( agent thisagent )
+// player cast spell - from temple to fervus
+declare
+	integer time;
+
+begin
+	// catch-all: don't run this spell if the target is dead, it will mess up the system
+	If ($IsDead (thisagent) == True)
+		return;
+
+	time = 14000;
+	if ($randomnumber(40) < $getattribute(thisagent,#ATTRIB_strength))
+		time = time / 2;
+	$createeffector(thisagent,"vines_effector",time,"after");
+
+//	Since the vines effector is persistent, and the vines icon is invisible,
+//	the vines icon isn't really necessary.  I had to move the Vines_End callback
+//	from the vines_icon to the vines_effector, of course.
+//	$createeffector(thisagent,"vines_icon",time);
+
+	// set attrib for freeze locking (see UnFreeze_Unit)
+	$SetAttribute( thisagent, #ATTRIB_HasEffectVines, 1 );
+
+	// pause action
+	$Freeze_Unit (ThisAgent);
+
+	$SpecifyIntent (thisagent, #intent_entangled);
+end
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+function Vines_End( agent thisagent )
+// player cast spell - from temple to fervus
+// - callback from "vines_effector" effector
+declare
+
+begin
+	// release attrib for freeze locking (see UnFreeze_Unit)
+	$SetAttribute( thisagent, #ATTRIB_HasEffectVines, 0 );
+
+	// resume action
+	$UnFreeze_Unit (ThisAgent);
+end
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+function Wither_Begin( agent thisagent )
+// player cast spell - from temple to krypta
+declare
+
+begin
+	$createeffector(thisagent,"wither_effector",0);
+	$createeffector(thisagent,"wither_icon",30000);
+	$SetAttribute( thisagent, #ATTRIB_HasEffectWither, 1 );
+
+	$MagicalAdjustAttribute(thisagent,#ATTRIB_strength,-10);
+
+	$adjustattribute(thisagent,#ATTRIB_MovementRateModifier, 200 );
+	$adjustattribute(thisagent,#ATTRIB_ActionRateModifier, 500);
+end
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+function Wither_End( agent thisagent )
+// player cast spell - from temple to krypta
+// - callback from "wither_icon" effector
+declare
+
+begin
+	$SetAttribute( thisagent, #ATTRIB_HasEffectWither, 0 );
+	$MagicalAdjustAttribute(thisagent,#ATTRIB_strength,10);
+	$adjustattribute(thisagent,#ATTRIB_MovementRateModifier, -200 );
+	$adjustattribute(thisagent,#ATTRIB_ActionRateModifier, -500);
+end
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+function Animate_Bones_Effect( agent thisagent )
+// player cast spell - from temple to krypta
+declare
+
+begin
+	$createeffector( thisagent, "animate_bones_effector", 2500, "after" );
+
+	// set the attribute, so you can't cast this again on this unit
+	$SetAttribute( thisagent, #ATTRIB_HasEffectAnimateBones, 1 );
+end
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+function Animate_Bones_Callback( agent thisagent )
+// player cast spell - from temple to krypta
+// - callback from animate_bones_effector effector
+declare
+
+begin
+	if ($isdead(thisagent) == FALSE)
+		$SpawnUnit ( thisagent, "Skeleton" );
+
+	// clear the attribute, so you can cast again
+	$SetAttribute( thisagent, #ATTRIB_HasEffectAnimateBones, 0 );
+end
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+function Reanimate_Begin( agent thisagent )
+// player cast spell - from temple to krypta
+declare
+
+begin
+	$SpecifyIntent (ThisAgent, #intent_reanimating);
+	$createeffector( thisagent, "reanimate_effector", 1700 );
+
+	$Shared_Begin_Resurrect( thisagent );
+end
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+function Reanimate_End( agent thisagent )
+// player cast spell - from temple to krypta
+// - callback from "reanimate_effector" effector
+declare
+
+begin
+	$Shared_End_Resurrect( thisagent );
+end
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+function Dauros_Stone_Skin_Begin( agent thisagent )
+// player cast spell - from temple to dauros
+declare
+
+begin
+	$createeffector(thisagent,"dauros_stone_skin_effector",0);
+	$createeffector(thisagent,"dauros_stone_skin_icon",30000);
+	$SetAttribute( thisagent, #ATTRIB_HasEffectStoneSkin, 1 );
+
+	$adjustattribute(thisagent,#ATTRIB_armor_basic_damage,6);
+end
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+function Dauros_Stone_Skin_End( agent thisagent )
+// player cast spell - from temple to dauros
+// - callback from "dauros_stone_skin_icon" effector
+declare
+
+begin
+	$adjustattribute(thisagent,#ATTRIB_armor_basic_damage,-6);
+	$SetAttribute( thisagent, #ATTRIB_HasEffectStoneSkin, 0 );
+end
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+function Vigilance_Begin( agent thisagent )
+// player cast spell - from temple to dauros
+declare
+
+begin
+	$createeffector(thisagent,"vigilance_effector",0);
+	$createeffector(thisagent,"vigilance_icon",30000);
+
+	$MagicalAdjustAttribute(thisagent,#ATTRIB_WillPower,10);
+	$MagicalAdjustAttribute(thisagent,#ATTRIB_HtoH,10);
+	$MagicalAdjustAttribute(thisagent,#ATTRIB_Ranged,10);
+	$MagicalAdjustAttribute(thisagent,#ATTRIB_Parry,10);
+	$MagicalAdjustAttribute(thisagent,#ATTRIB_Dodge,10);
+	$adjustattribute(thisagent,#ATTRIB_Weapon_Basic_Damage,6);
+	$adjustattribute(thisagent,#ATTRIB_MovementRateModifier, -50 );
+	$adjustattribute(thisagent,#ATTRIB_ActionRateModifier, -500);
+	$SetAttribute( thisagent, #ATTRIB_HasEffectVigilance, 1 );
+
+	$turnonSPeedTrail(thisagent,4);
+end
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+function Vigilance_End( agent thisagent )
+// player cast spell - from temple to dauros
+// - callback from "vigilance_icon" effector
+declare
+
+begin
+	$MagicalAdjustAttribute(thisagent,#ATTRIB_WillPower,-10);
+	$MagicalAdjustAttribute(thisagent,#ATTRIB_HtoH,-10);
+	$MagicalAdjustAttribute(thisagent,#ATTRIB_Ranged,-10);
+	$MagicalAdjustAttribute(thisagent,#ATTRIB_Parry,-10);
+	$MagicalAdjustAttribute(thisagent,#ATTRIB_Dodge,-10);
+	$adjustattribute(thisagent,#ATTRIB_Weapon_Basic_Damage,-6);
+	$adjustattribute(thisagent,#ATTRIB_MovementRateModifier, 50 );
+	$adjustattribute(thisagent,#ATTRIB_ActionRateModifier, 500);
+	$SetAttribute( thisagent, #ATTRIB_HasEffectVigilance, 0 );
+
+	$turnoffSpeedTrail(thisagent);
+end
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+function Petrify_Begin( agent thisagent )
+// player cast spell - from temple to duaros
+declare
+	integer time;
+
+begin
+	// catch-all: don't run this spell if the target is dead, it will mess up the system
+	If ($IsDead (thisagent) == True)
+		return;
+
+	time = 19000;
+	if ($randomnumber(100) <= $getattribute(thisagent,#ATTRIB_MagicResistance))
+		time = time / 2;
+
+	$createeffector(thisagent,"petrify_effector",0);
+	$createeffector(thisagent,"petrify_icon",time);
+
+	// set flag for freeze locking (see UnFreeze_Unit)
+	$SetAttribute( thisagent, #ATTRIB_HasEffectPetrify, 1 );
+
+	$GetProperUnitArt( thisagent );
+
+	// pause action
+	$Freeze_Unit (ThisAgent);
+
+	$SpecifyIntent (thisagent, #intent_petrified);
+end
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+function Petrify_End( agent thisagent )
+// player cast spell - from temple to duaros
+// - callback from "petrify_icon" effector
+declare
+
+begin
+	// release flag for freeze locking (see UnFreeze_Unit)
+	$SetAttribute( thisagent, #ATTRIB_HasEffectPetrify, 0 );
+
+	$GetProperUnitArt( thisagent );
+
+	// resume action
+	$UnFreeze_Unit (ThisAgent);
+end
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+function Shared_Begin_Resurrect( agent thisagent )
+// helper function for resurrection shared code
+declare
+
+begin
+	// MUST SET THIS HERE - because of the replacement script system
+//	thisagent's "activescript" = thisagent's "startingscript";
+
+// I changed this to set the activescript to the basicscript
+// so when a hero is ressurected, they go back to whatever it was they 
+// were doing when they died, instead of being reset to what they started
+// the game doing. The only time startingscript should be used is by functions
+// that have overridden the basicscript to function.
+	thisagent's "activescript" = thisagent's "Basicscript";
+
+
+	//Kill existing activescript (which is paused)
+	//Reason: Otherwise it may call back and delete itself (because the activescript is be_dead)
+	$Killthread (ThisAgent's "ActiveScript");
+
+	$ClearEngineDeathFlags( thisagent );
+end
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+function Shared_End_Resurrect( agent thisagent )
+// helper function for resurrection shared code
+declare
+
+begin
+	//$SetThreadInterval ( thisagent's "activescript", #Normal_Cycle );
+
+	//New thread - not set thread interval
+
+	$NewThread (ThisAgent's "ActiveScript", #Normal_Cycle, ThisAgent);
+
+	$SetAttribute( thisagent, #ATTRIB_HP, $getattribute(thisagent,#ATTRIB_MaxHP));
+	thisagent's "type" = thisagent's "original_type";
+	$performaction(thisagent,"do_nothing",thisagent);
+end
+
