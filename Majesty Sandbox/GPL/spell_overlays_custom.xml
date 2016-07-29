@@ -6,8 +6,8 @@
 			<Info value="DontBlock"/>
 			<Menu value="11"/>
 			<ImageIDBase value="HRA1"/>
-			<DefaultSound value="Healing"/>
 			<Script type="0" cProc="0" GPLFunction="agrela_heal_end"/>
+			<DefaultSound value="Healing"/>
 		</Engine>
 		<Game version="1">
 			<DialogID value="0"/>

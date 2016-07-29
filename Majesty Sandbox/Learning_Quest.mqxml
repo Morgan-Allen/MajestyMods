@@ -4,6 +4,7 @@
 			<Dataset base="Majesty">
 				<Load>
 					<Template>Learning_Quest.q</Template>
+					<Descriptions>GPL/spell_overlays_custom.xml</Descriptions>
 					<GPL>
 						<Target>learning_bytecode.bcd</Target>
 						<Source>GPL/quest_setup.gpl</Source>
