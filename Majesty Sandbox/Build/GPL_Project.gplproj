@@ -1,0 +1,3 @@
+source="..\GPL\quest_setup.gpl"
+source="..\GPL\combat_changes.gpl"
+source="..\GPL\spell_changes.gpl"

@@ -13,7 +13,7 @@ declare
 begin
 	if ($isdead(affects)) return;
 	
-	$player_heal(affects, 5);
+	$player_heal(affects, 25);
 	
 	called = $agrela_heal_call;
 	$newThread(called, 1000, affects, called);

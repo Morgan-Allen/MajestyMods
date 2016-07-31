@@ -1,0 +1,26 @@
+
+<!--
+    Here is where the magic happens-
+    %GPLBCC% -in %2.gplproj -out %3 -stdout
+    
+    Once you're in the correct directory, simply call that and copy the output
+    file to wherever you want it to be.
+-->
+
+
+<project name="Stratos Build Windows" basedir="." default="build">
+	
+	<property name="SDK_dir" value="C:\Program Files (x86)\Steam\steamapps\common\Majesty HD\SDK" />
+	<property name="proj_file" value="GPL_Project.gplproj" />
+	<property name="bytecode_file" value="project_bytecode.bcd" />
+	
+	<target name="build">
+		<exec executable="${SDK_dir}\Gplbcc.exe">
+			<arg value="-in"/>
+			<arg value="${proj_file}"/>
+			<arg value="-out"/>
+			<arg value="${bytecode_file}"/>
+			<arg value="-stdout"/>
+		</exec>
+	</target>
+</project>

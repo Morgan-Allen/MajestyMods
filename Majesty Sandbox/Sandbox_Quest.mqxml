@@ -3,10 +3,10 @@
 		<DataConfiguration>
 			<Dataset base="Majesty">
 				<Load>
-					<Template>Learning_Quest.q</Template>
+					<Template>Sandbox_Quest.q</Template>
 					<Descriptions>GPL/spell_overlays_custom.xml</Descriptions>
 					<GPL>
-						<Target>learning_bytecode.bcd</Target>
+						<Target>Build/project_bytecode.bcd</Target>
 						<Source>GPL/quest_setup.gpl</Source>
 						<Source>GPL/combat_changes.gpl</Source>
 						<Source>GPL/spell_changes.gpl</Source>
@@ -14,7 +14,7 @@
 				</Load>
 			</Dataset>
 		</DataConfiguration>
-		<DisplayName lang="en_US">My Quest</DisplayName>
+		<DisplayName lang="en_US">Morgan's Sandbox</DisplayName>
 		<Description lang="en_US">
 			<Short>My Quest's Goals</Short>
 			<Long>A description of My Quest</Long>
