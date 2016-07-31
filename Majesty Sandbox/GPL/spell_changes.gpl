@@ -9,26 +9,29 @@
 function Agrela_Heal_Effect(agent affects)
 // player cast spell - from temple to agrela
 declare
+	function called;
 begin
 	if ($isdead(affects)) return;
 	
-	$player_heal(affects, 10);
+	$player_heal(affects, 5);
 	
-	$createeffector(affects, "agrela_healing_effector", 1000);
+	called = $agrela_heal_call;
+	$newThread(called, 1000, affects, called);
 end
 
 
-function agrela_heal_end(agent affects)
+function agrela_heal_call(agent affects, function called)
 declare
 	integer health, maxHP;
 begin
-	$player_heal(affects, 1);
-	
 	health = $GetAttribute(affects, #ATTRIB_HP   );
 	maxHP  = $GetAttribute(affects, #ATTRIB_MAXHP);
 	
-	if (health < maxHP) begin
-		$createeffector(affects, "agrela_healing_effector", 1000);
+	if (health < maxHP && $isdead(affects) == FALSE) begin
+		$player_heal(affects, 1);
+	end
+	else begin
+		$killThread(called);
 	end
 end
 
