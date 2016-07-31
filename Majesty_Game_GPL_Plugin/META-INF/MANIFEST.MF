@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Majesty Game GPL Plugin
+Bundle-SymbolicName: Majesty_Game_GPL_Plugin
+Bundle-Version: 1.0.0
+Bundle-Activator: majesty_game_gpl_plugin.Activator
+Bundle-Vendor: Morgan Allen
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime
+Bundle-ActivationPolicy: lazy
