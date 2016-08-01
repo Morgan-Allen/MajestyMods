@@ -1,11 +1,14 @@
+
+
 package majesty_game_gpl_plugin;
 
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
-/**
- * The activator class controls the plug-in life cycle
- */
+
+
+/**  The activator class controls the plug-in life cycle
+  */
 public class Activator extends AbstractUIPlugin {
 	
 	
