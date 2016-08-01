@@ -12,31 +12,25 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 
+
 //  Using the following guides for the moment-
 //  https://wiki.eclipse.org/FAQ_How_do_I_write_an_editor_for_my_own_language%3F
 //  http://wiki.eclipse.org/FAQ_How_do_I_provide_syntax_coloring_in_an_editor%3F
-//  http://stackoverflow.com/questions/299283/how-to-write-a-plugin-for-eclipse/299316#299316
-//  http://stackoverflow.com/questions/3838558/eclipse-plug-in-create-a-new-file-extension-for-a-language-not-supported-by-ecl/4959583#4959583
-//  http://www.ibm.com/developerworks/opensource/library/os-ecplug/
 //  http://www.vogella.com/tutorials/EclipsePlugin/article.html#extending-the-eclipse-ide
 
 
-
 public class GPLEditor extends TextEditor {
-
-	private ColorManager colorManager;
+	
 	
 	
 	public GPLEditor() {
 		super();
-		colorManager = new ColorManager();
-		setSourceViewerConfiguration(new XMLConfiguration(colorManager));
-		setDocumentProvider(new XMLDocumentProvider());
+		setSourceViewerConfiguration(new GPLConfiguration());
+		setDocumentProvider(new GPLDocumentProvider());
 	}
 	
 	
 	public void dispose() {
-		colorManager.dispose();
 		super.dispose();
 	}
 	
@@ -148,7 +142,7 @@ public class GPLEditor extends TextEditor {
 		
 		private Token colourToken(int r, int g, int b) {
 			final Device device = Display.getDefault();
-			return new Token(new TextAttribute(new Color(device, 255, 0  , 255)));
+			return new Token(new TextAttribute(new Color(device, r, g, b)));
 		}
 	}
 }
