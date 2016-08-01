@@ -1,7 +1,7 @@
 
 
 
-package test_plugin.editors;
+package gpl_plugin.editors;
 import org.eclipse.jface.text.*;
 import org.eclipse.jface.text.contentassist.*;
 import org.eclipse.jface.text.presentation.*;
@@ -21,11 +21,11 @@ import org.eclipse.ui.texteditor.*;
 //  http://codeandme.blogspot.ie/2014/06/adding-hyperlink-detectors-to-editors.html
 
 
-public class GPLEditor2 extends TextEditor {
+public class GPLEditor extends TextEditor {
 
 	//private ColorManager colorManager;
 
-	public GPLEditor2() {
+	public GPLEditor() {
 		super();
 		//colorManager = new ColorManager();
 		setSourceViewerConfiguration(new GPLConfiguration());

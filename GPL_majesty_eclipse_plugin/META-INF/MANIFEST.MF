@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Test_plugin
-Bundle-SymbolicName: test_plugin;singleton:=true
+Bundle-SymbolicName: GPL_majesty_eclipse_plugin;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,

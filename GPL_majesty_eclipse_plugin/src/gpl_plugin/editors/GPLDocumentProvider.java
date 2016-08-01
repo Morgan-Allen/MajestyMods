@@ -1,4 +1,4 @@
-package test_plugin.editors;
+package gpl_plugin.editors;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.IDocument;
