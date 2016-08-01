@@ -28,10 +28,10 @@ public class GPLDocumentProvider extends FileDocumentProvider {
 		IDocument document = super.createDocument(element);
 		if (document == null) return null;
 		
-		/*
+		//*
 		IDocumentPartitioner partitioner = new FastPartitioner(
 			new GPLPartitionScanner(),
-			new String[] { XML_TAG, XML_COMMENT }
+			new String[] { GPL_TAG, GPL_COMMENT }
 		);
 		partitioner.connect(document);
 		document.setDocumentPartitioner(partitioner);
@@ -40,14 +40,12 @@ public class GPLDocumentProvider extends FileDocumentProvider {
 	}
 	
 	
-	/*
+	//*
 	class GPLPartitionScanner extends RuleBasedPartitionScanner {
 		GPLPartitionScanner() {
-			IToken xmlComment = new Token(XML_COMMENT);
-			IToken tag = new Token(XML_TAG);
-			IPredicateRule[] rules = new IPredicateRule[2];
+			IToken xmlComment = new Token(GPL_COMMENT);
+			IPredicateRule[] rules = new IPredicateRule[1];
 			rules[0] = new MultiLineRule("<!--", "-->", xmlComment);
-			rules[1] = new TagRule(tag);
 			setPredicateRules(rules);
 		}
 	}

@@ -175,7 +175,7 @@ end
 function hit_reaction(agent acting, agent target)
 declare
 	string type;
-	agent guy,palace;
+	agent guy, palace;
 	list guys;
 begin
 	if ($is_person(target)) begin

@@ -1,32 +1,44 @@
 
 
-package majesty_gpl_plugin.editors;
-import org.eclipse.ui.texteditor.*;
-import org.eclipse.ui.editors.text.*;
+
+package test_plugin.editors;
 import org.eclipse.jface.text.*;
+import org.eclipse.jface.text.contentassist.*;
+import org.eclipse.jface.text.presentation.*;
 import org.eclipse.jface.text.rules.*;
 import org.eclipse.jface.text.source.*;
-import org.eclipse.jface.text.presentation.*;
-import org.eclipse.jface.text.contentassist.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.ui.editors.text.*;
+import org.eclipse.ui.texteditor.*;
 
 
 
-public class GPLEditor extends TextEditor {
-	
-	
-	
-	public GPLEditor() {
+//  Using the following guides for the moment-
+//  https://wiki.eclipse.org/FAQ_How_do_I_write_an_editor_for_my_own_language%3F
+//  http://wiki.eclipse.org/FAQ_How_do_I_provide_syntax_coloring_in_an_editor%3F
+//  http://www.vogella.com/tutorials/EclipsePlugin/article.html#extending-the-eclipse-ide
+//  http://codeandme.blogspot.ie/2014/06/adding-hyperlink-detectors-to-editors.html
+
+
+public class GPLEditor2 extends TextEditor {
+
+	//private ColorManager colorManager;
+
+	public GPLEditor2() {
 		super();
+		//colorManager = new ColorManager();
 		setSourceViewerConfiguration(new GPLConfiguration());
 		setDocumentProvider(new GPLDocumentProvider());
 	}
 	
 	
 	public void dispose() {
+		//colorManager.dispose();
 		super.dispose();
 	}
+	
+
 	
 	
 	
@@ -60,7 +72,6 @@ public class GPLEditor extends TextEditor {
 		"define",
 		"expression",
 		
-		/*
 		"true",
 		"false",
 		"&&",
@@ -86,7 +97,6 @@ public class GPLEditor extends TextEditor {
 		"coordinate",
 		"string",
 		"list",
-		//*/
 	};
 	
 	
@@ -94,9 +104,10 @@ public class GPLEditor extends TextEditor {
 		public GPLScanner() {
 			
 			final Token
-				forKeyword = colourToken(255, 0  , 0  ),  //red
-				forComment = colourToken(0  , 255, 0  ),  //green
-				forString  = colourToken(0  , 0  , 255);  //blue
+				forNormal  = colourToken(0  , 0  , 0  ),
+				forKeyword = colourToken(191, 0  , 191),  //purple
+				forComment = colourToken(0  , 127, 0  ),  //green
+				forString  = colourToken(0  , 0  , 191);  //blue
 			
 			WordRule keywordRule = new WordRule(new IWordDetector() {
 				public boolean isWordStart(char c) {
@@ -106,7 +117,7 @@ public class GPLEditor extends TextEditor {
 				public boolean isWordPart(char c) {
 					return Character.isJavaIdentifierPart(c);
 				}
-			});
+			}, forNormal, true);
 			for (String word : GPL_KEYWORDS) {
 				 keywordRule.addWord(word, forKeyword);
 			}
