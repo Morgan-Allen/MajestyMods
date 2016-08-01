@@ -7,6 +7,7 @@ import org.eclipse.jface.text.contentassist.*;
 import org.eclipse.jface.text.presentation.*;
 import org.eclipse.jface.text.rules.*;
 import org.eclipse.jface.text.source.*;
+import org.eclipse.jface.text.hyperlink.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.editors.text.*;
@@ -19,6 +20,8 @@ import org.eclipse.ui.texteditor.*;
 //  http://wiki.eclipse.org/FAQ_How_do_I_provide_syntax_coloring_in_an_editor%3F
 //  http://www.vogella.com/tutorials/EclipsePlugin/article.html#extending-the-eclipse-ide
 //  http://codeandme.blogspot.ie/2014/06/adding-hyperlink-detectors-to-editors.html
+//  http://www.ibm.com/developerworks/opensource/tutorials/os-ecl-commplgin3/
+
 
 
 public class GPLEditor extends TextEditor {
@@ -62,6 +65,10 @@ public class GPLEditor extends TextEditor {
 
 		public ITextHover getTextHover(ISourceViewer sv, String contentType) {
 			return new DefaultTextHover(sv);
+		}
+		
+		public IHyperlinkDetector[] getHyperlinkDetectors(ISourceViewer sourceViewer) {
+			return new IHyperlinkDetector[] { new FunctionLinker() };
 		}
 	}
 	
@@ -140,4 +147,91 @@ public class GPLEditor extends TextEditor {
 			return new Token(new TextAttribute(new Color(device, r, g, b)));
 		}
 	}
+	
+	
+	
+	/**  Allows hyper-linking between named functions (not functional yet.)
+	  */
+	class FunctionLinker extends AbstractHyperlinkDetector {
+		
+		public IHyperlink[] detectHyperlinks(
+			ITextViewer viewer, IRegion region, boolean showMultipleLinks
+		) {
+			IDocument document = viewer.getDocument();
+			int offset = region.getOffset();
+			
+			
+			//  Extract relevant characters
+			IRegion lineRegion;
+			String candidate;
+			try {
+				lineRegion = document.getLineInformationOfOffset(offset);
+				candidate  = document.get(lineRegion.getOffset(), lineRegion.getLength());
+			}
+			catch (BadLocationException e) { return null; }
+			
+			
+			
+			
+			return null;
+			/*
+			// look for keyword
+			int index = candidate.indexOf(PREFERENCES);
+			if (index != -1) {
+
+				// detect region containing keyword
+				IRegion targetRegion = new Region(lineRegion.getOffset()
+						+ index, PREFERENCES.length());
+				if ((targetRegion.getOffset() <= offset)
+						&& ((targetRegion.getOffset() + targetRegion
+								.getLength()) > offset))
+					// create link
+					return new IHyperlink[] { new PreferencesHyperlink(
+							targetRegion) };
+			}
+			return null;
+			//*/
+		}
+	}
+	
+	class FunctionHyperlink implements IHyperlink {
+
+		private final IRegion fUrlRegion;
+		
+		
+		public FunctionHyperlink(IRegion urlRegion) {
+			fUrlRegion = urlRegion;
+		}
+		
+		
+		public IRegion getHyperlinkRegion() {
+			return fUrlRegion;
+		}
+		
+		
+		public String getTypeLabel() {
+			return "function";
+		}
+		
+		
+		public String getHyperlinkText() {
+			return null;
+		}
+		
+		
+		public void open() {
+			//  TODO:  Implement this!
+		}
+	}
+
 }
+
+
+
+
+
+
+
+
+
+
