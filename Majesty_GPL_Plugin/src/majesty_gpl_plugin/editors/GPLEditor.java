@@ -1,8 +1,6 @@
 
 
-package majesty_game_gpl_plugin;
-import java.util.*;
-
+package majesty_gpl_plugin.editors;
 import org.eclipse.ui.texteditor.*;
 import org.eclipse.ui.editors.text.*;
 import org.eclipse.jface.text.*;
@@ -20,27 +18,41 @@ import org.eclipse.swt.widgets.*;
 //  http://stackoverflow.com/questions/299283/how-to-write-a-plugin-for-eclipse/299316#299316
 //  http://stackoverflow.com/questions/3838558/eclipse-plug-in-create-a-new-file-extension-for-a-language-not-supported-by-ecl/4959583#4959583
 //  http://www.ibm.com/developerworks/opensource/library/os-ecplug/
+//  http://www.vogella.com/tutorials/EclipsePlugin/article.html#extending-the-eclipse-ide
 
 
 
-/**  Performs actual text-editing functions-
-  */
-public class GPLTextEditor extends TextEditor {
+public class GPLEditor extends TextEditor {
+
+	private ColorManager colorManager;
 	
 	
+	public GPLEditor() {
+		super();
+		colorManager = new ColorManager();
+		setSourceViewerConfiguration(new XMLConfiguration(colorManager));
+		setDocumentProvider(new XMLDocumentProvider());
+	}
+	
+	
+	public void dispose() {
+		colorManager.dispose();
+		super.dispose();
+	}
+	
+	
+	/*
 	public GPLTextEditor() {
 		super();
 		setSourceViewerConfiguration(new GPLConfiguration());
 	}
 	
-	
 	protected void createActions() {
 		
 	}
+	//*/
 	
-	
-	/**  I'm... sure this will all prove useful some day...
-	  */
+
 	class GPLConfiguration extends SourceViewerConfiguration {
 
 		public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
@@ -139,15 +151,4 @@ public class GPLTextEditor extends TextEditor {
 			return new Token(new TextAttribute(new Color(device, 255, 0  , 255)));
 		}
 	}
-
 }
-
-
-
-
-
-
-
-
-
-

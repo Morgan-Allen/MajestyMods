@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension point="org.eclipse.ui.editors">
+      <editor
+            name="Sample GPL Editor"
+            extensions="gpl"
+            icon="icons/sample.gif"
+            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+            class="majesty_gpl_plugin.editors.GPLEditor"
+            id="majesty_gpl_plugin.editors.GPLEditor"
+      >
+      </editor>
+   </extension>
+</plugin>
